@@ -1,0 +1,51 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * creativeshop
+ *
+ * @author    Marek Zabrowarny <marek.zabrowarny@creativestyle.pl>
+ * @copyright 2018 creativestyle
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+
+    <preference for="MageSuite\AttributeProcessor\Api\ProcessorRegistryInterface"
+                type="MageSuite\AttributeProcessor\Service\ProcessorRegistry"/>
+
+    <type name="MageSuite\AttributeProcessor\Service\ProcessorRegistry" shared="true">
+        <arguments>
+            <argument name="entityTypes" xsi:type="array">
+                <item name="catalog_product" xsi:type="string">MageSuite\AttributeProcessor\Api\ProductProcessorInterface</item>
+                <item name="catalog_category" xsi:type="string">MageSuite\AttributeProcessor\Api\CategoryProcessorInterface</item>
+                <item name="order" xsi:type="string">MageSuite\AttributeProcessor\Api\OrderProcessorInterface</item>
+            </argument>
+            <!-- Dummy attribute processors (PoC and testing purposes) -->
+            <argument name="processors" xsi:type="array">
+                <item name="catalog_product" xsi:type="array">
+                    <item name="attribute_processor_active" xsi:type="object">MageSuite\AttributeProcessor\Service\Product\AttributeProcessorActive</item>
+                </item>
+                <item name="catalog_category" xsi:type="array">
+                    <item name="attribute_processor_active" xsi:type="object">MageSuite\AttributeProcessor\Service\Category\AttributeProcessorActive</item>
+                </item>
+            </argument>
+        </arguments>
+    </type>
+
+    <!-- Entity model plugins to wrap getData method -->
+    <type name="Magento\Catalog\Model\Product">
+        <plugin name="creativestyle_attribute_processor_catalog_model_product_plugin"
+                type="MageSuite\AttributeProcessor\Plugin\Catalog\Model\Product\AroundGetData"
+                sortOrder="1"/>
+    </type>
+    <type name="Magento\Catalog\Model\Category">
+        <plugin name="creativestyle_attribute_processor_catalog_model_category_plugin"
+                type="MageSuite\AttributeProcessor\Plugin\Catalog\Model\Category\AroundGetData"
+                sortOrder="1"/>
+    </type>
+    <type name="Magento\Sales\Model\Order">
+        <plugin name="creativestyle_attribute_processor_sales_model_order_plugin"
+                type="MageSuite\AttributeProcessor\Plugin\Sales\Model\Order\AroundGetData"
+                sortOrder="1"/>
+    </type>
+</config>
